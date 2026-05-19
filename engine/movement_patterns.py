@@ -1,4 +1,4 @@
-from karel.stanfordkarel import *
+from stanfordkarel import *
 from engine.navigation import turn_right
 
 

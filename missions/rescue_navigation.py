@@ -1,4 +1,4 @@
-from karel.stanfordkarel import *
+from stanfordkarel import *
 from engine.navigation import turn_right
 from engine.beeper_logic import place_multiple_beepers
 from engine.logging_utils import log_start
