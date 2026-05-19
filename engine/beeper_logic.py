@@ -14,4 +14,6 @@ def place_multiple_beepers(count):
 
 
 
-def
+def safe_pick_beeper():
+    if beepers_present():
+        pick_beeper()
