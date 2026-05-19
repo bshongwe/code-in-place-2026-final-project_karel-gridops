@@ -1,6 +1,8 @@
 from karel.stanfordkarel import *
 from engine.navigation import return_home
 from engine.beeper_logic import collect_all_beepers
+from engine.logging_utils import log_start
+from engine.logging_utils import log_complete
 
 
 """
@@ -14,8 +16,12 @@ and returns to the dock.
 
 
 def main():
+    log_start('Warehouse Sorting')
+
     process_warehouse()
     return_home()
+
+    log_complete('Warehouse Sorting')
 
 
 
