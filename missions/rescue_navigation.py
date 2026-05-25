@@ -1,8 +1,11 @@
-from stanfordkarel import *
+# from stanfordkarel import *
+from stanfordkarel import run_karel_program
 from engine.navigation import turn_right
 from engine.beeper_logic import place_multiple_beepers
 from engine.logging_utils import log_start
 from engine.logging_utils import log_complete
+from analytics.mission_stats import complete_mission
+from analytics.mission_stats import print_stats
 
 
 """
@@ -20,6 +23,8 @@ def main():
     navigate_city()
 
     log_complete('Rescue Navigation')
+    complete_mission()
+    print_stats()
 
 
 
@@ -43,4 +48,4 @@ def deliver_final_supplies():
 
 
 if __name__ == '__main__':
-    main()
+    run_karel_program('worlds/rescue.w')

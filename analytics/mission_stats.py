@@ -1,3 +1,6 @@
+from analytics.performance_tracker import update_best_run
+
+
 mission_stats = {
     'moves': 0,
     'beepers_collected': 0,
@@ -18,6 +21,7 @@ def record_beeper_collection():
 
 def complete_mission():
     mission_stats['missions_completed'] += 1
+    update_best_run(mission_stats['moves'], mission_stats['beepers_collected'])
 
 
 

@@ -1,4 +1,5 @@
 from stanfordkarel import *
+from analytics.mission_stats import record_move
 
 
 
@@ -17,6 +18,7 @@ def turn_around():
 def move_until_wall():
     while front_is_clear():
         move()
+        record_move()
 
 
 
