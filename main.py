@@ -9,6 +9,7 @@ MISSIONS = {
     '2': ('Hospital Delivery', 'missions/hospital_delivery.py'),
     '3': ('Rescue Navigation', 'missions/rescue_navigation.py'),
     '4': ('Traffic Cleanup',   'missions/traffic_cleanup.py'),
+    '5': ('Supply Relay',      'missions/supply_relay.py'),
 }
 
 
@@ -16,7 +17,7 @@ def select_mission():
     print('\n=== KarelGridOps Mission Selector ===')
     for key, (name, _) in MISSIONS.items():
         print(f'  {key}. {name}')
-    choice = input('\nSelect mission (1-4): ').strip()
+    choice = input('\nSelect mission (1-5): ').strip()
     return MISSIONS.get(choice)
 
 
