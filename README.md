@@ -22,11 +22,11 @@ A professional Stanford Code in Place Karel engineering project.
 <!-- Karel image -->
 ![Karel large view](img/karelLarge.png)
 
-python -m pip install -r requirements.txt
+<code>python -m pip install -r requirements.txt</code>
 
 ## Run
 
-python main.py
+<code>python main.py</code>
 
 The app starts with a mission selector. Choose a mission number to launch the corresponding Karel world.
 
