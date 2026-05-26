@@ -9,6 +9,9 @@ from analytics.mission_stats import complete_mission
 from analytics.mission_stats import print_stats
 
 
+DEBUG = False
+
+
 """
 Warehouse Sorting Mission
 -------------------------
@@ -30,11 +33,6 @@ def main():
     print_stats()
 
 
-if __name__ == '__main__':
-    run_karel_program('worlds/warehouse.w')
-
-
-
 def process_warehouse():
     # The warehouse has four aisles in columns 1, 3, 5, and 7.
     for aisle_index in range(4):
@@ -53,7 +51,8 @@ def sweep_current_aisle():
         if beepers_present():
             pick_beeper()
             record_beeper_collection()
-            print('picked beeper')
+            if DEBUG:
+                print('picked beeper')
 
         if not front_is_clear():
             break
@@ -64,7 +63,8 @@ def sweep_current_aisle():
     if beepers_present():
         pick_beeper()
         record_beeper_collection()
-        print('picked beeper')
+        if DEBUG:
+            print('picked beeper')
 
 
 def cross_to_next_aisle():
@@ -102,3 +102,7 @@ def face_south():
 def face_east():
     while not_facing_east():
         turn_left()
+
+
+if __name__ == '__main__':
+    run_karel_program('worlds/warehouse.w')
