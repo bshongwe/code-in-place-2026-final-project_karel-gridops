@@ -5,8 +5,6 @@ A professional Stanford Code in Place Karel engineering project.
 <!-- Cover image -->
 ![Stanford Code-in-Place Cover](img/stanford_code_in_place_cover.jpg)
 
-<!-- Karel image -->
-![Karel large view](img/karelLarge.png)
 
 ## Features
 
@@ -20,6 +18,9 @@ A professional Stanford Code in Place Karel engineering project.
 - Testable movement patterns
 
 ## Installation
+
+<!-- Karel image -->
+![Karel large view](img/karelLarge.png)
 
 python -m pip install -r requirements.txt
 
