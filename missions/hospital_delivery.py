@@ -1,8 +1,5 @@
 # from stanfordkarel import *
 from stanfordkarel import run_karel_program
-from engine.navigation import turn_around
-from engine.navigation import turn_right
-from engine.navigation import face_east
 from engine.beeper_logic import place_multiple_beepers
 from engine.logging_utils import log_start
 from engine.logging_utils import log_complete
@@ -31,50 +28,41 @@ def main():
 
 
 def deliver_medicine():
-    move_to_room_entrance()
-    enter_room_and_deliver()
-    move_to_room_entrance()
-    enter_room_and_deliver()
-    move_to_room_entrance()
-    enter_room_and_deliver()
-
-
-
-def move_to_room_entrance():
-    face_east()
+    deliver_to_current_room()
+    move_to_next_room()
+    deliver_to_current_room()
+    move_to_next_room()
+    deliver_to_current_room()
     move()
-    while left_is_blocked():
+
+
+
+def deliver_to_current_room():
+    move()
+    turn_left()
+    climb_room_column()
+    place_multiple_beepers(2)
+    return_to_corridor()
+
+
+
+def climb_room_column():
+    while front_is_clear():
         move()
 
 
 
-def enter_room_and_deliver():
+def move_to_next_room():
+    move()
+
+
+
+def return_to_corridor():
     turn_left()
-    move()
-    place_multiple_beepers(2)
-    turn_around()
-    move()
-    turn_right()
-
-
-
-def move_to_corridor():
     turn_left()
-    move()
-    move()
-    turn_right()
-
-
-
-def deliver_to_room():
-    while right_is_blocked():
+    while front_is_clear():
         move()
-    turn_right()
-    move()
-    place_multiple_beepers(2)
-    turn_around()
-    move()
-    turn_right()
+    turn_left()
 
 
 if __name__ == '__main__':

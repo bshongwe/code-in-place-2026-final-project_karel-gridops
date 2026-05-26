@@ -1,11 +1,8 @@
 # from stanfordkarel import *
 from stanfordkarel import run_karel_program
 from engine.navigation import return_home
-from engine.navigation import turn_right
-from engine.navigation import face_north
-from engine.navigation import face_south
-from engine.navigation import face_east
-from engine.beeper_logic import collect_all_beepers
+from analytics.mission_stats import record_beeper_collection
+from analytics.mission_stats import record_move
 from engine.logging_utils import log_start
 from engine.logging_utils import log_complete
 from analytics.mission_stats import complete_mission
@@ -25,13 +22,7 @@ and returns to the dock.
 def main():
     log_start('Warehouse Sorting')
 
-    collect_aisle_going_north()
-    cross_to_next_aisle()
-    collect_aisle_going_south()
-    cross_to_next_aisle()
-    collect_aisle_going_south()
-    cross_to_next_aisle()
-    collect_aisle_going_south()
+    process_warehouse()
     return_home()
 
     log_complete('Warehouse Sorting')
@@ -44,60 +35,70 @@ if __name__ == '__main__':
 
 
 
-def collect_aisle_going_north():
+def process_warehouse():
+    # The warehouse has four aisles in columns 1, 3, 5, and 7.
+    for aisle_index in range(4):
+        sweep_current_aisle()
+
+        if aisle_index < 3:
+            cross_to_next_aisle()
+
+
+
+def sweep_current_aisle():
+    # Sweep from the bottom of the aisle to the top, collecting beepers as we go.
     face_north()
-    while front_is_clear():
+
+    while True:
         if beepers_present():
             pick_beeper()
+            record_beeper_collection()
+            print('picked beeper')
+
+        if not front_is_clear():
+            break
+
         move()
+        record_move()
+
     if beepers_present():
         pick_beeper()
-
-
-
-def collect_aisle_going_south():
-    face_south()
-    while front_is_clear():
-        if beepers_present():
-            pick_beeper()
-        move()
-    if beepers_present():
-        pick_beeper()
-
+        record_beeper_collection()
+        print('picked beeper')
 
 
 def cross_to_next_aisle():
-    face_north()
-    while front_is_clear():
-        move()
+    # We are at the top of an aisle facing north.
     face_east()
     move()
+    record_move()
     move()
+    record_move()
 
-
-
-def process_warehouse():
-    for i in range(4):
-        process_aisle()
-        move_to_next_aisle()
-
-
-
-def process_aisle():
+    face_south()
     while front_is_clear():
-        collect_all_beepers()
         move()
+        record_move()
 
-    collect_all_beepers()
+    face_east()
 
 
+def turn_right():
+    turn_left()
+    turn_left()
+    turn_left()
 
-def move_to_next_aisle():
-    if facing_north():
-        turn_right()
-        move()
-        turn_right()
-    else:
+
+def face_north():
+    while not_facing_north():
         turn_left()
-        move()
+
+
+def face_south():
+    while not_facing_south():
+        turn_left()
+
+
+def face_east():
+    while not_facing_east():
         turn_left()
