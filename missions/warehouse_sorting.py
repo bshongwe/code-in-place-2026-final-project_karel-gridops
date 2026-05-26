@@ -34,17 +34,19 @@ def main():
 
 
 def process_warehouse():
-    # The warehouse has four aisles in columns 1, 3, 5, and 7.
-    for aisle_index in range(4):
-        sweep_current_aisle()
+    # World-aware scan: traverse every reachable column.
+    # Start at bottom-left, sweep up first column, then for each next
+    # column (moved at top boundary) sweep down and back up.
+    sweep_column_north_collect()
 
-        if aisle_index < 3:
-            cross_to_next_aisle()
+    while move_to_next_column_at_top():
+        sweep_column_south_collect()
+        sweep_column_north_collect()
 
 
 
-def sweep_current_aisle():
-    # Sweep from the bottom of the aisle to the top, collecting beepers as we go.
+def sweep_column_north_collect():
+    # Sweep from bottom to top in the current column.
     face_north()
 
     while True:
@@ -67,20 +69,56 @@ def sweep_current_aisle():
             print('picked beeper')
 
 
-def cross_to_next_aisle():
-    # We are at the top of an aisle facing north.
-    face_east()
-    move()
-    record_move()
-    move()
-    record_move()
-
+def sweep_column_south_collect():
+    # Sweep from top to bottom in the current column.
     face_south()
-    while front_is_clear():
+
+    while True:
+        if beepers_present():
+            pick_beeper()
+            record_beeper_collection()
+            if DEBUG:
+                print('picked beeper')
+
+        if not front_is_clear():
+            break
+
         move()
         record_move()
 
+    if beepers_present():
+        pick_beeper()
+        record_beeper_collection()
+        if DEBUG:
+            print('picked beeper')
+
+
+def move_to_next_column_at_top():
+    # Move one column east along the top boundary.
     face_east()
+    if not front_is_clear():
+        return False
+
+    move()
+    record_move()
+    return True
+
+
+def sweep_current_aisle():
+    # Backward-compatible alias for older tests/helpers.
+    sweep_column_north_collect()
+
+
+def cross_to_next_aisle():
+    # Backward-compatible alias for older tests/helpers.
+    moved_once = move_to_next_column_at_top()
+    if not moved_once:
+        return
+
+    # Try one more step to preserve old two-column hop behavior when needed.
+    if front_is_clear():
+        move()
+        record_move()
 
 
 def turn_right():
