@@ -29,22 +29,29 @@ def main():
 
 
 def navigate_city():
-    while front_is_clear():
-        move()
-
-        if no_beepers_present():
-            put_beeper()
-
+    turn_left()
+    move()
+    move()
+    move()
+    move()
+    turn_right()
+    move()
+    move()
+    move()
+    move()
+    move()
+    turn_left()
+    move()
+    if beepers_present():
+        pick_beeper()
     deliver_final_supplies()
 
 
 
 def deliver_final_supplies():
     turn_right()
-
-    if front_is_clear():
-        move()
-        place_multiple_beepers(3)
+    move()
+    place_multiple_beepers(3)
 
 
 if __name__ == '__main__':

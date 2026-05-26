@@ -1,6 +1,5 @@
 # from stanfordkarel import *
 from stanfordkarel import run_karel_program
-from engine.beeper_logic import collect_all_beepers
 from engine.logging_utils import log_start
 from engine.logging_utils import log_complete
 from analytics.mission_stats import complete_mission
@@ -28,27 +27,80 @@ def main():
 
 
 def clear_city_grid():
-    for i in range(5):
-        clear_street()
+    total_rows = 10
+    going_east = True
 
-        if left_is_clear():
-            move_to_next_street()
+    for row_index in range(total_rows):
+        if going_east:
+            clear_street_eastward()
+        else:
+            clear_street_westward()
+
+        if row_index == total_rows - 1:
+            break
+
+        if not move_to_next_street(going_east):
+            break
+
+        going_east = not going_east
 
 
 
-def clear_street():
+def clear_street_eastward():
+    face_east()
     while front_is_clear():
-        collect_all_beepers()
+        if beepers_present():
+            pick_beeper()
         move()
+    if beepers_present():
+        pick_beeper()
 
-    collect_all_beepers()
 
 
+def clear_street_westward():
+    face_west()
+    while front_is_clear():
+        if beepers_present():
+            pick_beeper()
+        move()
+    if beepers_present():
+        pick_beeper()
 
-def move_to_next_street():
+
+def turn_right():
     turn_left()
+    turn_left()
+    turn_left()
+
+
+def face_east():
+    while not_facing_east():
+        turn_left()
+
+
+def face_west():
+    while not_facing_west():
+        turn_left()
+
+
+
+def move_to_next_street(going_east):
+    if going_east:
+        turn_left()
+    else:
+        turn_right()
+
+    if not front_is_clear():
+        return False
+
     move()
-    turn_left()
+
+    if going_east:
+        turn_left()
+    else:
+        turn_right()
+
+    return True
 
 
 if __name__ == '__main__':

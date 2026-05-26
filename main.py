@@ -1,3 +1,4 @@
+import os
 import subprocess
 from pathlib import Path
 import sys
@@ -25,6 +26,8 @@ if __name__ == '__main__':
         name, path = mission
         print(f'\nLaunching: {name}\n')
         project_root = Path(__file__).parent
-        subprocess.run([sys.executable, '-m', path.removesuffix('.py').replace('/', '.')], cwd=str(project_root))
+        env = os.environ.copy()
+        env['PYTHONPATH'] = str(project_root)
+        subprocess.run([sys.executable, str(project_root / path)], cwd=str(project_root), env=env)
     else:
         print('Invalid selection.')
