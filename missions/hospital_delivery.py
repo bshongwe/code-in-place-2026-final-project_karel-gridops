@@ -1,8 +1,5 @@
 # from stanfordkarel import *
 from stanfordkarel import run_karel_program
-from engine.navigation import turn_around
-from engine.navigation import turn_right
-from engine.navigation import face_east
 from engine.beeper_logic import place_multiple_beepers
 from engine.logging_utils import log_start
 from engine.logging_utils import log_complete
@@ -31,34 +28,41 @@ def main():
 
 
 def deliver_medicine():
-    move_to_first_room()
-    deliver_to_room()
+    deliver_to_current_room()
     move_to_next_room()
-    deliver_to_room()
+    deliver_to_current_room()
     move_to_next_room()
-    deliver_to_room()
+    deliver_to_current_room()
+    move()
 
 
 
-def move_to_first_room():
+def deliver_to_current_room():
     move()
     turn_left()
-    move()
+    climb_room_column()
+    place_multiple_beepers(2)
+    return_to_corridor()
+
+
+
+def climb_room_column():
+    while front_is_clear():
+        move()
 
 
 
 def move_to_next_room():
     move()
-    move()
 
 
 
-def deliver_to_room():
-    place_multiple_beepers(2)
+def return_to_corridor():
     turn_left()
     turn_left()
-    move()
-    turn_right()
+    while front_is_clear():
+        move()
+    turn_left()
 
 
 if __name__ == '__main__':
