@@ -2,6 +2,12 @@
 
 A professional Stanford Code in Place Karel engineering project.
 
+<!-- Cover image -->
+![Stanford Code-in-Place Cover](img/stanford_code_in_place_cover.jpg)
+
+<!-- Karel image -->
+![Karel large view](img/karelLarge.png)
+
 ## Features
 
 - Strict Stanford Karel syntax
@@ -24,3 +30,9 @@ python main.py
 The app starts with a mission selector. Choose a mission number to launch the corresponding Karel world.
 
 If `python` is not available in your shell on Windows, use the full path to your installed interpreter instead.
+
+## Screenshots
+
+- **First test run:**
+
+	![First test run screenshot](img/karel_first_testrun.png)
