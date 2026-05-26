@@ -31,48 +31,32 @@ def main():
 
 
 def deliver_medicine():
-    move_to_room_entrance()
-    enter_room_and_deliver()
-    move_to_room_entrance()
-    enter_room_and_deliver()
-    move_to_room_entrance()
-    enter_room_and_deliver()
+    move_to_first_room()
+    deliver_to_room()
+    move_to_next_room()
+    deliver_to_room()
+    move_to_next_room()
+    deliver_to_room()
 
 
 
-def move_to_room_entrance():
-    face_east()
+def move_to_first_room():
     move()
-    while left_is_blocked():
-        move()
-
-
-
-def enter_room_and_deliver():
     turn_left()
     move()
-    place_multiple_beepers(2)
-    turn_around()
-    move()
-    turn_right()
 
 
 
-def move_to_corridor():
-    turn_left()
+def move_to_next_room():
     move()
     move()
-    turn_right()
 
 
 
 def deliver_to_room():
-    while right_is_blocked():
-        move()
-    turn_right()
-    move()
     place_multiple_beepers(2)
-    turn_around()
+    turn_left()
+    turn_left()
     move()
     turn_right()
 

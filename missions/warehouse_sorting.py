@@ -5,6 +5,7 @@ from engine.navigation import turn_right
 from engine.navigation import face_north
 from engine.navigation import face_south
 from engine.navigation import face_east
+from engine.navigation import turn_around
 from engine.beeper_logic import collect_all_beepers
 from engine.logging_utils import log_start
 from engine.logging_utils import log_complete
@@ -25,13 +26,7 @@ and returns to the dock.
 def main():
     log_start('Warehouse Sorting')
 
-    collect_aisle_going_north()
-    cross_to_next_aisle()
-    collect_aisle_going_south()
-    cross_to_next_aisle()
-    collect_aisle_going_south()
-    cross_to_next_aisle()
-    collect_aisle_going_south()
+    process_warehouse()
     return_home()
 
     log_complete('Warehouse Sorting')
@@ -41,6 +36,46 @@ def main():
 
 if __name__ == '__main__':
     run_karel_program('worlds/warehouse.w')
+
+
+
+def process_warehouse():
+    # World-aware traversal: process each aisle (odd-numbered avenues)
+    # starting at avenue 1, street 1, facing East.
+    while True:
+        collect_current_aisle()
+
+        # attempt to step two avenues east to next aisle
+        face_east()
+        if not front_is_clear():
+            break
+        move()
+        if not front_is_clear():
+            break
+        move()
+
+
+
+def process_aisle():
+    while front_is_clear():
+        collect_all_beepers()
+        move()
+
+    collect_all_beepers()
+
+
+
+def move_to_next_aisle():
+    face_east()
+    if front_is_clear():
+        move()
+    else:
+        return
+
+    if front_is_clear():
+        move()
+    else:
+        return
 
 
 
@@ -75,29 +110,28 @@ def cross_to_next_aisle():
     move()
 
 
+def collect_current_aisle():
+    # Assumes Karel is at bottom of an aisle facing East.
+    # Move into the aisle, sweep from bottom to top picking beepers,
+    # and return to the bottom facing East.
+    # Face north and ascend
+    turn_left()
+    while True:
+        if beepers_present():
+            pick_beeper()
+        if not front_is_clear():
+            break
+        move()
 
-def process_warehouse():
-    for i in range(4):
-        process_aisle()
-        move_to_next_aisle()
+    # at top of aisle; pick beeper if present
+    if beepers_present():
+        pick_beeper()
 
-
-
-def process_aisle():
+    # return to bottom
+    turn_left()
+    turn_left()
     while front_is_clear():
-        collect_all_beepers()
         move()
 
-    collect_all_beepers()
-
-
-
-def move_to_next_aisle():
-    if facing_north():
-        turn_right()
-        move()
-        turn_right()
-    else:
-        turn_left()
-        move()
-        turn_left()
+    # now facing south at bottom; orient east for next step
+    turn_left()
