@@ -143,4 +143,4 @@ def face_east():
 
 
 if __name__ == '__main__':
-    run_karel_program('worlds/warehouse.w')
+    run_karel_program('worlds/warehouse_sorting.w')
