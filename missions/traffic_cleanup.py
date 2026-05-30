@@ -104,4 +104,8 @@ def move_to_next_street(going_east):
 
 
 if __name__ == '__main__':
-    run_karel_program('worlds/city_grid.w')
+    import sys
+
+    world_path = sys.argv[1] if len(sys.argv) > 1 else 'worlds/traffic_cleanup.w'
+    del sys
+    run_karel_program(world_path)
