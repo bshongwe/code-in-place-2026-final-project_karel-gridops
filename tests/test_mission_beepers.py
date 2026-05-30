@@ -6,9 +6,9 @@ import missions.traffic_cleanup as traffic_cleanup
 import missions.warehouse_sorting as warehouse_sorting
 
 
-def test_warehouse_collect_aisle_going_north_picks_expected_cells(monkeypatch):
+def test_warehouse_sweep_column_north_collect_picks_expected_cells(monkeypatch):
     front_states = iter([True, True, False])
-    beeper_states = iter([True, False, True])
+    beeper_states = iter([True, False, True, False])
     moves = []
     picks = []
     faced_north = []
@@ -19,16 +19,16 @@ def test_warehouse_collect_aisle_going_north_picks_expected_cells(monkeypatch):
     monkeypatch.setattr(builtins, 'move', lambda: moves.append('move'), raising=False)
     monkeypatch.setattr(builtins, 'pick_beeper', lambda: picks.append('pick'), raising=False)
 
-    warehouse_sorting.collect_aisle_going_north()
+    warehouse_sorting.sweep_column_north_collect()
 
     assert len(faced_north) == 1
     assert len(moves) == 2
     assert len(picks) == 2
 
 
-def test_warehouse_collect_aisle_going_south_picks_expected_cells(monkeypatch):
+def test_warehouse_sweep_column_south_collect_picks_expected_cells(monkeypatch):
     front_states = iter([True, True, False])
-    beeper_states = iter([False, True, True])
+    beeper_states = iter([False, True, True, False])
     moves = []
     picks = []
     faced_south = []
@@ -39,11 +39,48 @@ def test_warehouse_collect_aisle_going_south_picks_expected_cells(monkeypatch):
     monkeypatch.setattr(builtins, 'move', lambda: moves.append('move'), raising=False)
     monkeypatch.setattr(builtins, 'pick_beeper', lambda: picks.append('pick'), raising=False)
 
-    warehouse_sorting.collect_aisle_going_south()
+    warehouse_sorting.sweep_column_south_collect()
 
     assert len(faced_south) == 1
     assert len(moves) == 2
     assert len(picks) == 2
+
+
+def test_warehouse_sweep_current_aisle_aliases_north_helper(monkeypatch):
+    calls = []
+
+    monkeypatch.setattr(
+        warehouse_sorting,
+        'sweep_column_north_collect',
+        lambda: calls.append('north'),
+    )
+
+    warehouse_sorting.sweep_current_aisle()
+
+    assert calls == ['north']
+
+
+def test_warehouse_cross_to_next_aisle_moves_once_when_open(monkeypatch):
+    events = []
+
+    monkeypatch.setattr(warehouse_sorting, 'move_to_next_column_at_top', lambda: True)
+    monkeypatch.setattr(builtins, 'front_is_clear', lambda: True, raising=False)
+    monkeypatch.setattr(builtins, 'move', lambda: events.append('move'), raising=False)
+    monkeypatch.setattr(warehouse_sorting, 'record_move', lambda: events.append('record_move'))
+
+    warehouse_sorting.cross_to_next_aisle()
+
+    assert events == ['move', 'record_move']
+
+
+def test_warehouse_cross_to_next_aisle_stops_when_blocked(monkeypatch):
+    events = []
+
+    monkeypatch.setattr(warehouse_sorting, 'move_to_next_column_at_top', lambda: False)
+
+    warehouse_sorting.cross_to_next_aisle()
+
+    assert events == []
 
 
 def test_traffic_clear_street_eastward_picks_on_path(monkeypatch):
@@ -153,37 +190,57 @@ def test_hospital_enter_room_and_deliver_places_two_beepers(monkeypatch):
 
     monkeypatch.setattr(builtins, 'turn_left', lambda: events.append('turn_left'), raising=False)
     monkeypatch.setattr(builtins, 'move', lambda: events.append('move'), raising=False)
+    monkeypatch.setattr(builtins, 'front_is_clear', lambda: False, raising=False)
     monkeypatch.setattr(
         hospital_delivery,
         'place_multiple_beepers',
         lambda count: events.append(f'place_{count}'),
     )
-    monkeypatch.setattr(hospital_delivery, 'turn_around', lambda: events.append('turn_around'))
-    monkeypatch.setattr(hospital_delivery, 'turn_right', lambda: events.append('turn_right'))
 
-    hospital_delivery.enter_room_and_deliver()
+    hospital_delivery.deliver_to_current_room()
 
     assert events == [
+        'move',
         'turn_left',
-        'move',
         'place_2',
-        'turn_around',
-        'move',
-        'turn_right',
+        'turn_left',
+        'turn_left',
+        'turn_left',
     ]
 
 
-def test_hospital_move_to_room_entrance_faces_east(monkeypatch):
+def test_hospital_move_to_next_room_moves_once(monkeypatch):
     events = []
-    front_states = iter([True, True, False])
 
-    monkeypatch.setattr(hospital_delivery, 'face_east', lambda: events.append('face_east'))
     monkeypatch.setattr(builtins, 'move', lambda: events.append('move'), raising=False)
-    monkeypatch.setattr(builtins, 'left_is_blocked', lambda: next(front_states), raising=False)
+    hospital_delivery.move_to_next_room()
 
-    hospital_delivery.move_to_room_entrance()
+    assert events == ['move']
 
-    assert events == ['face_east', 'move', 'move', 'move']
+
+def test_hospital_climb_room_column_moves_until_wall(monkeypatch):
+    front_states = iter([True, True, False])
+    events = []
+
+    monkeypatch.setattr(builtins, 'front_is_clear', lambda: next(front_states), raising=False)
+    monkeypatch.setattr(builtins, 'move', lambda: events.append('move'), raising=False)
+
+    hospital_delivery.climb_room_column()
+
+    assert events == ['move', 'move']
+
+
+def test_hospital_return_to_corridor_moves_back_and_turns(monkeypatch):
+    front_states = iter([False])
+    events = []
+
+    monkeypatch.setattr(builtins, 'turn_left', lambda: events.append('turn_left'), raising=False)
+    monkeypatch.setattr(builtins, 'front_is_clear', lambda: next(front_states), raising=False)
+    monkeypatch.setattr(builtins, 'move', lambda: events.append('move'), raising=False)
+
+    hospital_delivery.return_to_corridor()
+
+    assert events == ['turn_left', 'turn_left', 'turn_left']
 
 
 def test_rescue_navigate_city_pickup_and_final_drop(monkeypatch):
